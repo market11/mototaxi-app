@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#1e40af">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>🛺 MototaxiCloud</title>
+  <title>🛺 MototaxiCloud Pro</title>
   <style>
     :root { --primary: #1e40af; --success: #16a34a; --danger: #dc2626; --bg: #f3f4f6; --card: #ffffff; --text: #111827; --muted: #6b7280; }
     * { box-sizing: border-box; margin:0; padding:0; font-family: system-ui, -apple-system, sans-serif; }
@@ -43,11 +42,13 @@
     .qr-box code { font-size: 18px; letter-spacing: 1px; }
     .loc-status { font-size: 13px; color: var(--muted); margin-top: 4px; text-align: center; }
     .loading { text-align: center; padding: 20px; color: var(--muted); }
+    .lost-photo { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-top: 8px; background: #eee; }
+    .zone-tag { display: inline-block; background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 6px; font-size: 12px; margin-right: 6px; margin-bottom: 6px; }
     @media (max-width: 400px) { .role-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
-  <header id="app-header">🛺 MototaxiCloud</header>
+  <header id="app-header">🛺 MototaxiCloud Pro</header>
 
   <div class="container">
     <div id="panel-role">
@@ -60,25 +61,47 @@
       </div>
     </div>
 
+    <!-- ADMIN -->
     <div id="panel-admin" class="hidden">
       <div class="card">
         <h3>➕ Registrar Mototaxi</h3>
         <input type="text" id="adm-id" placeholder="ID (ej: DRV-001)">
         <input type="text" id="adm-name" placeholder="Nombre completo">
+        <input type="tel" id="adm-phone" placeholder="📞 Teléfono de contacto">
         <input type="text" id="adm-site" placeholder="Sitio / Base">
         <input type="text" id="adm-vehicle" placeholder="Número de motocarro">
         <input type="text" id="adm-color" placeholder="Color">
         <input type="file" id="adm-photo" accept="image/*">
-        <button class="btn btn-success" onclick="saveDriver()">💾 Guardar en Cloud</button>
+        <button class="btn btn-success" onclick="saveDriver()">💾 Guardar Conductor</button>
       </div>
-      <div id="adm-list"></div>
+
+      <div class="card">
+        <h3>🏷️ Tarifas por Zona</h3>
+        <div style="display:flex; gap:8px; margin-bottom:10px;">
+          <input type="text" id="zone-name" placeholder="Nombre zona (ej: Centro)" style="flex:1;">
+          <input type="number" id="zone-price" placeholder="Precio S/." style="flex:1;">
+        </div>
+        <button class="btn btn-primary" onclick="saveZone()">➕ Agregar Zona</button>
+        <div id="zone-list" style="margin-top:12px;"></div>
+      </div>
+
+      <div class="card">
+        <h3>📦 Objetos Perdidos (Reportados por Choferes)</h3>
+        <div id="admin-lost-list"></div>
+      </div>
+
+      <div class="card">
+        <h3>👥 Conductores Registrados</h3>
+        <div id="adm-list"></div>
+      </div>
       <button class="btn btn-outline" onclick="setRole(null)">🔙 Cambiar Perfil</button>
     </div>
 
+    <!-- DRIVER -->
     <div id="panel-driver" class="hidden">
       <div class="card" id="drv-login">
         <h3>🔑 Acceso Conductor</h3>
-        <input type="text" id="drv-id-input" placeholder="Ingresa tu ID">
+        <input type="text" id="drv-id-input" placeholder="Ingresa tu ID o Código QR">
         <button class="btn btn-primary" onclick="loginDriver()">Ingresar</button>
       </div>
       <div id="drv-dashboard" class="hidden">
@@ -95,12 +118,20 @@
             <p class="loc-status" id="drv-loc-status">Ubicación no definida</p>
           </div>
         </div>
-        <h4 style="margin:12px 0 8px;">📥 Solicitudes Cercanas (<span id="max-km">3</span> km)</h4>
-        <div id="drv-rides"><p class="loading">Cargando solicitudes...</p></div>
+        <h4 style="margin:12px 0 8px;">📥 Solicitudes Cercanas</h4>
+        <div id="drv-rides"><p class="loading">Cargando...</p></div>
+        
+        <div class="card" style="margin-top:16px;">
+          <h4>📦 Reportar Objeto Perdido</h4>
+          <input type="text" id="lost-desc" placeholder="Descripción del objeto">
+          <input type="file" id="lost-photo" accept="image/*">
+          <button class="btn btn-outline" onclick="reportLostItem()">📢 Enviar al Admin</button>
+        </div>
         <button class="btn btn-outline" onclick="logoutDriver()">🚪 Cerrar Sesión</button>
       </div>
     </div>
 
+    <!-- PASSENGER -->
     <div id="panel-passenger" class="hidden">
       <div class="card">
         <h3>📍 Solicitar Mototaxi</h3>
@@ -123,16 +154,9 @@
         <div class="card hidden" id="psg-active-ride">
           <h4>🛺 Viaje en curso</h4>
           <p id="psg-driver-info"></p>
-          <p id="psg-driver-dist"></p>
+          <p id="psg-driver-phone"></p>
           <button class="btn btn-success" onclick="completeRide()">💵 Pagado / Finalizar</button>
         </div>
-      </div>
-      <div class="card">
-        <h4>📦 Objetos Perdidos</h4>
-        <input type="text" id="lost-desc" placeholder="Descripción del objeto">
-        <input type="text" id="lost-contact" placeholder="Teléfono de contacto">
-        <button class="btn btn-outline" onclick="reportLost()">📢 Reportar</button>
-        <div id="lost-list" style="margin-top:10px;"></div>
       </div>
       <button class="btn btn-outline" onclick="setRole(null)">🔙 Cambiar Perfil</button>
     </div>
@@ -144,12 +168,12 @@
     <button onclick="setRole('passenger')" id="nav-psg">🙋 Pasajero</button>
   </nav>
 
-  <!-- FIREBASE SDK COMPAT (CDN) -->
+  <!-- FIREBASE SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <script>
-    // 🔥 TU CONFIGURACIÓN REAL DE FIREBASE
+    // 🔥 TU CONFIGURACIÓN DE FIREBASE
     const firebaseConfig = {
       apiKey: "AIzaSyBeSC3BFyFXbUMoAbVwk0n2bPuAfTvJgPg",
       authDomain: "mototaxi-app-60004.firebaseapp.com",
@@ -160,17 +184,14 @@
       measurementId: "G-23ZVY9DMCG"
     };
 
-    // ✅ Inicializar Firebase (versión compat para CDN)
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // 🌐 ESTADO GLOBAL
     let currentRole = null, currentDriver = null, activeRide = null;
     let psgLat = null, psgLon = null, drvLat = null, drvLon = null;
     const MAX_KM = 3;
-    let unsubRides = null, unsubLost = null, unsubDrivers = null;
+    let unsubRides = null, unsubLost = null, unsubDrivers = null, unsubZones = null;
 
-    // 📐 HAVERSINE - Cálculo de distancia en km
     function calcDistance(lat1, lon1, lat2, lon2) {
       const R = 6371;
       const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -179,50 +200,39 @@
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
-    // 🧹 LIMPIAR LISTENERS al cambiar de vista
     function cleanupListeners() {
-      unsubRides?.(); unsubLost?.(); unsubDrivers?.();
-      unsubRides = unsubLost = unsubDrivers = null;
+      unsubRides?.(); unsubLost?.(); unsubDrivers?.(); unsubZones?.();
+      unsubRides = unsubLost = unsubDrivers = unsubZones = null;
     }
 
-    // 📍 GPS PASAJERO
     function getPassengerLocation() {
-      if(!navigator.geolocation) return alert('🌍 GPS no disponible en tu navegador');
+      if(!navigator.geolocation) return alert('🌍 GPS no disponible');
       document.getElementById('btn-get-loc').disabled = true;
-      document.getElementById('psg-loc-status').textContent = '📡 Obteniendo coordenadas...';
+      document.getElementById('psg-loc-status').textContent = '📡 Obteniendo...';
       navigator.geolocation.getCurrentPosition(pos => {
         psgLat = pos.coords.latitude; psgLon = pos.coords.longitude;
         document.getElementById('psg-loc-status').textContent = `✅ ${psgLat.toFixed(4)}, ${psgLon.toFixed(4)}`;
         document.getElementById('btn-request').disabled = false;
       }, err => {
-        console.error('GPS Error:', err);
-        document.getElementById('psg-loc-status').textContent = '❌ Activa GPS y permite ubicación';
+        document.getElementById('psg-loc-status').textContent = '❌ Activa GPS y permisos';
         document.getElementById('btn-get-loc').disabled = false;
       }, {enableHighAccuracy: true, timeout: 15000});
     }
 
-    // 📍 GPS CONDUCTOR
     function getDriverLocation() {
       if(!navigator.geolocation) return alert('🌍 GPS no disponible');
       document.getElementById('drv-loc-status').textContent = '📡 Actualizando...';
       navigator.geolocation.getCurrentPosition(pos => {
         drvLat = pos.coords.latitude; drvLon = pos.coords.longitude;
         document.getElementById('drv-loc-status').textContent = `📍 ${drvLat.toFixed(4)}, ${drvLon.toFixed(4)}`;
-        // Actualizar ubicación en Firebase si está logueado
         if(currentDriver?.id) {
-          db.collection('drivers').doc(currentDriver.id).update({ 
-            lat: drvLat, 
-            lon: drvLon,
-            lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
-          }).catch(err => console.warn('Error actualizando ubicación:', err));
+          db.collection('drivers').doc(currentDriver.id).update({ lat: drvLat, lon: drvLon }).catch(console.warn);
         }
       }, err => {
-        console.error('GPS Error:', err);
         document.getElementById('drv-loc-status').textContent = '❌ Error GPS';
       }, {enableHighAccuracy: true});
     }
 
-    // 🧭 NAVEGACIÓN ENTRE ROLES
     function setRole(role) {
       cleanupListeners();
       currentRole = role;
@@ -232,28 +242,28 @@
       
       if(role === 'admin') {
         document.getElementById('panel-admin').classList.remove('hidden');
-        loadAdminDrivers();
+        loadAdminDrivers(); loadZones(); loadAdminLostItems();
       } else if(role === 'driver') {
         document.getElementById('panel-driver').classList.remove('hidden');
       } else if(role === 'passenger') {
         document.getElementById('panel-passenger').classList.remove('hidden');
-        loadLostItems();
       } else {
         document.getElementById('panel-role').classList.remove('hidden');
       }
       if(role) document.getElementById(`nav-${role==='passenger'?'psg':role}`).classList.add('active');
     }
 
-    // 👨‍💼 ADMIN: GUARDAR CONDUCTOR
+    // 👨‍💼 ADMIN: GUARDAR CONDUCTOR (AHORA CON TELÉFONO)
     async function saveDriver() {
       const id = document.getElementById('adm-id').value.trim() || 'DRV-'+Date.now().toString().slice(-4);
       const file = document.getElementById('adm-photo').files[0];
-      
       const reader = new FileReader();
+      
       reader.onload = async e => {
         const data = {
           id,
           name: document.getElementById('adm-name').value.trim() || 'Conductor',
+          phone: document.getElementById('adm-phone').value.trim() || 'No especificado',
           site: document.getElementById('adm-site').value.trim(),
           vehicle: document.getElementById('adm-vehicle').value.trim(),
           color: document.getElementById('adm-color').value.trim(),
@@ -264,133 +274,122 @@
         };
         try {
           await db.collection('drivers').doc(id).set(data);
-          alert('✅ Conductor registrado en la nube');
-          document.querySelectorAll('#panel-admin input').forEach(i => i.value = '');
+          alert('✅ Conductor registrado con éxito');
+          document.querySelectorAll('#panel-admin input, #panel-admin select').forEach(i => i.value = '');
         } catch(err) {
-          console.error('Error:', err);
           alert('❌ Error: ' + err.message);
         }
       };
       file ? reader.readAsDataURL(file) : reader.onload({target:{result:null}});
     }
 
-    // 👨‍💼 ADMIN: CARGAR LISTA EN TIEMPO REAL
     function loadAdminDrivers() {
-      const list = document.getElementById('adm-list');
-      list.innerHTML = '<p class="loading">Cargando conductores...</p>';
-      
       unsubDrivers = db.collection('drivers').orderBy('createdAt', 'desc').onSnapshot(snap => {
-        if(snap.empty) {
-          list.innerHTML = '<p class="loading">📭 Sin conductores registrados</p>';
-          return;
-        }
-        list.innerHTML = snap.docs.map(doc => {
+        document.getElementById('adm-list').innerHTML = snap.docs.map(doc => {
           const d = doc.data();
           return `
           <div class="card">
             <div style="display:flex;justify-content:space-between;align-items:center;">
-              <div><strong>${d.id}</strong> • ${d.name}<br><small>${d.site || '-'} • ${d.color} • ${d.vehicle}</small></div>
+              <div><strong>${d.id}</strong> • ${d.name}<br><small>📞 ${d.phone} • ${d.site} • ${d.color} • ${d.vehicle}</small></div>
               <span class="chip" style="background:${d.active?'#dcfce7':'#fee2e2'}">${d.active?'Activo':'Inactivo'}</span>
             </div>
-            <div class="qr-box" style="margin-top:8px;"><small>CÓDIGO QR</small><br><code>${d.qrToken}</code></div>
+            <div class="qr-box" style="margin-top:8px;"><small>CÓDIGO ACCESO</small><br><code>${d.qrToken}</code></div>
             <button class="btn btn-danger" style="margin-top:8px;padding:8px;" onclick="deleteDriver('${d.id}')">🗑️ Eliminar</button>
           </div>`;
         }).join('');
-      }, err => {
-        console.error('Error cargando conductores:', err);
-        list.innerHTML = '<p class="loading" style="color:var(--danger)">❌ Error de conexión</p>';
       });
     }
 
-    // 👨‍💼 ADMIN: ELIMINAR CONDUCTOR
     async function deleteDriver(id) {
-      if(!confirm('¿Eliminar permanentemente este conductor?')) return;
+      if(!confirm('¿Eliminar conductor?')) return;
+      await db.collection('drivers').doc(id).delete();
+    }
+
+    // 🏷️ ADMIN: GESTIÓN DE ZONAS Y TARIFAS
+    async function saveZone() {
+      const name = document.getElementById('zone-name').value.trim();
+      const price = parseFloat(document.getElementById('zone-price').value);
+      if(!name || isNaN(price) || price <= 0) return alert('Ingresa nombre y precio válido');
+      
       try {
-        await db.collection('drivers').doc(id).delete();
-        alert('✅ Eliminado');
+        await db.collection('zones').doc(name).set({ name, price, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        document.getElementById('zone-name').value = '';
+        document.getElementById('zone-price').value = '';
+        alert('✅ Zona guardada');
       } catch(err) {
         alert('❌ Error: ' + err.message);
       }
     }
 
-    // 🏍️ DRIVER: LOGIN
-    async function loginDriver() {
-  const code = document.getElementById('drv-id-input').value.trim();
-  if(!code) return alert('Ingresa tu código o ID');
-  
-  try {
-    // Primero intenta buscar por QR Token
-    let query = await db.collection('drivers')
-      .where('qrToken', '==', code)
-      .limit(1)
-      .get();
-    
-    let doc;
-    let driverId;
-    
-    if(!query.empty) {
-      // Encontrado por QR Token
-      doc = query.docs[0];
-      driverId = doc.id;
-    } else {
-      // Si no, intenta buscar por ID de documento
-      doc = await db.collection('drivers').doc(code).get();
-      if(!doc.exists) {
-        return alert('❌ Código/ID no encontrado en la base de datos');
-      }
-      driverId = code;
+    function loadZones() {
+      unsubZones = db.collection('zones').orderBy('name').onSnapshot(snap => {
+        document.getElementById('zone-list').innerHTML = snap.docs.map(d => {
+          const z = d.data();
+          return `<span class="zone-tag">${z.name}: S/. ${z.price}</span>`;
+        }).join('') || '<p class="loading">Sin zonas configuradas</p>';
+      });
     }
-    
-    currentDriver = { id: driverId, ...doc.data() };
-    
-    // Verificar si está activo
-    if(!currentDriver.active) {
-      alert('⚠️ Tu cuenta aún no ha sido activada. Contacta al administrador.');
-    }
-    
-    document.getElementById('drv-login').classList.add('hidden');
-    document.getElementById('drv-dashboard').classList.remove('hidden');
-    
-    // Renderizar perfil
-    document.getElementById('drv-name').textContent = currentDriver.name;
-    document.getElementById('drv-meta').textContent = `${currentDriver.vehicle || '-'} • ${currentDriver.color || '-'} • ${currentDriver.site || '-'}`;
-    const avatar = document.getElementById('drv-avatar');
-    if(currentDriver.photo) {
-      avatar.style.backgroundImage = `url(${currentDriver.photo})`;
-      avatar.style.backgroundSize = 'cover';
-      avatar.textContent = '';
-    } else {
-      avatar.style.backgroundImage = '';
-      avatar.textContent = '👤';
-    }
-    
-    // Restaurar ubicación si existe
-    if(currentDriver.lat && currentDriver.lon) {
-      drvLat = currentDriver.lat;
-      drvLon = currentDriver.lon;
-      document.getElementById('drv-loc-status').textContent = `📍 ${drvLat.toFixed(4)}, ${drvLon.toFixed(4)}`;
-    }
-    
-    updateDriverStatusUI();
-    loadDriverRides();
-    
-  } catch(err) {
-    console.error('Login error:', err);
-    alert('❌ Error de conexión: ' + err.message);
-  }
-}
 
-    // 🏍️ DRIVER: ACTIVAR/DESACTIVAR
+    // 📦 ADMIN: VER OBJETOS PERDIDOS CON FOTOS
+    function loadAdminLostItems() {
+      unsubLost = db.collection('lostItems').orderBy('reportedAt', 'desc').onSnapshot(snap => {
+        document.getElementById('admin-lost-list').innerHTML = snap.docs.map(d => {
+          const i = d.data();
+          return `
+          <div class="card" style="padding:10px; border-left: 4px solid var(--primary);">
+            <strong>📦 ${i.description}</strong>
+            ${i.photo ? `<img src="${i.photo}" class="lost-photo">` : ''}
+            <div style="margin-top:8px; font-size:13px; color:var(--muted);">
+              👤 Reportado por: ${i.reportedBy || 'Desconocido'}<br>
+              📞 Contacto: ${i.contact || 'N/A'} • ${i.status} • ${i.date}
+            </div>
+          </div>`;
+        }).join('') || '<p class="loading">📭 Sin reportes</p>';
+      });
+    }
+
+    // 🏍️ DRIVER: LOGIN (ACEPTA ID O QR)
+    async function loginDriver() {
+      const code = document.getElementById('drv-id-input').value.trim();
+      if(!code) return alert('Ingresa tu ID o Código QR');
+      
+      try {
+        let query = await db.collection('drivers').where('qrToken', '==', code).limit(1).get();
+        let doc, driverId;
+        
+        if(!query.empty) {
+          doc = query.docs[0]; driverId = doc.id;
+        } else {
+          doc = await db.collection('drivers').doc(code).get();
+          if(!doc.exists) return alert('❌ Código/ID no encontrado');
+          driverId = code;
+        }
+        
+        currentDriver = { id: driverId, ...doc.data() };
+        document.getElementById('drv-login').classList.add('hidden');
+        document.getElementById('drv-dashboard').classList.remove('hidden');
+        
+        document.getElementById('drv-name').textContent = currentDriver.name;
+        document.getElementById('drv-meta').textContent = `${currentDriver.vehicle || '-'} • ${currentDriver.color || '-'}`;
+        const avatar = document.getElementById('drv-avatar');
+        if(currentDriver.photo) {
+          avatar.style.backgroundImage = `url(${currentDriver.photo})`;
+          avatar.style.backgroundSize = 'cover'; avatar.textContent = '';
+        } else { avatar.style.backgroundImage = ''; avatar.textContent = '👤'; }
+        
+        updateDriverStatusUI();
+        loadDriverRides();
+      } catch(err) {
+        alert('❌ Error: ' + err.message);
+      }
+    }
+
     async function toggleDriverStatus() {
       if(!currentDriver?.id) return;
       const newStatus = !currentDriver.active;
-      try {
-        await db.collection('drivers').doc(currentDriver.id).update({ active: newStatus });
-        currentDriver.active = newStatus;
-        updateDriverStatusUI();
-      } catch(err) {
-        alert('❌ Error: ' + err.message);
-      }
+      await db.collection('drivers').doc(currentDriver.id).update({ active: newStatus });
+      currentDriver.active = newStatus;
+      updateDriverStatusUI();
     }
 
     function updateDriverStatusUI() {
@@ -399,60 +398,65 @@
       btn.className = `btn ${currentDriver.active ? 'btn-danger' : 'btn-success'}`;
     }
 
-    // 🏍️ DRIVER: CARGAR SOLICITUDES EN TIEMPO REAL
     function loadDriverRides() {
-      document.getElementById('drv-rides').innerHTML = '<p class="loading">📡 Esperando solicitudes...</p>';
-      
-      unsubRides = db.collection('rides')
-        .where('status', '==', 'PENDING')
-        .onSnapshot(snap => {
-          // Si no tiene GPS activado
-          if(!drvLat || !drvLon) {
-            document.getElementById('drv-rides').innerHTML = '<p class="loading">📍 Activa tu GPS para ver solicitudes cercanas</p>';
-            return;
-          }
+      unsubRides = db.collection('rides').where('status', '==', 'PENDING').onSnapshot(snap => {
+        if(!drvLat || !drvLon) {
+          document.getElementById('drv-rides').innerHTML = '<p class="loading">📍 Activa tu GPS para ver solicitudes</p>';
+          return;
+        }
+        const nearby = snap.docs.map(d => ({id: d.id, ...d.data()}))
+          .filter(r => r.lat && r.lon)
+          .map(r => ({...r, dist: calcDistance(r.lat, r.lon, drvLat, drvLon)}))
+          .filter(r => r.dist <= MAX_KM)
+          .sort((a,b) => a.dist - b.dist);
           
-          // Filtrar y ordenar por distancia
-          const nearby = snap.docs.map(d => ({id: d.id, ...d.data()}))
-            .filter(r => r.lat && r.lon)
-            .map(r => ({...r, dist: calcDistance(r.lat, r.lon, drvLat, drvLon)}))
-            .filter(r => r.dist <= MAX_KM)
-            .sort((a,b) => a.dist - b.dist);
-            
-          if(nearby.length === 0) {
-            document.getElementById('drv-rides').innerHTML = `<p class="loading">📡 Sin solicitudes en ${MAX_KM} km</p>`;
-            return;
-          }
-          
-          document.getElementById('drv-rides').innerHTML = nearby.map(r => `
-            <div class="ride-card">
-              <div class="info">
-                <strong>👤 ${r.passengerName || 'Pasajero'}</strong>
-                <p>📍 A ${r.dist.toFixed(1)} km • 💰 S/. ${r.fare || '?'}</p>
-              </div>
-              <button class="btn btn-success" style="width:auto;padding:8px 12px;font-size:14px;" onclick="acceptRide('${r.id}')">Aceptar</button>
-            </div>
-          `).join('');
-        }, err => {
-          console.error('Error escuchando rides:', err);
-          document.getElementById('drv-rides').innerHTML = '<p class="loading" style="color:var(--danger)">❌ Error de conexión</p>';
-        });
+        document.getElementById('drv-rides').innerHTML = nearby.length ? nearby.map(r => `
+          <div class="ride-card">
+            <div class="info"><strong>👤 ${r.passengerName}</strong><p>📍 A ${r.dist.toFixed(1)} km • 💰 S/. ${r.fare || '?'}</p></div>
+            <button class="btn btn-success" style="width:auto;padding:8px 12px;" onclick="acceptRide('${r.id}')">Aceptar</button>
+          </div>
+        `).join('') : '<p class="loading">📡 Sin solicitudes cerca</p>';
+      });
     }
 
-    // 🏍️ DRIVER: ACEPTAR VIAJE
     async function acceptRide(rideId) {
-      if(!confirm('¿Aceptar este viaje?')) return;
-      if(!currentDriver?.id) return alert('❌ Sesión inválida');
+      if(!confirm('¿Aceptar viaje?')) return;
+      await db.collection('rides').doc(rideId).update({ status: 'ACCEPTED', driverId: currentDriver.id });
+      alert('✅ Viaje aceptado');
+    }
+
+    // 📦 DRIVER: REPORTAR OBJETO PERDIDO CON FOTO
+    async function reportLostItem() {
+      const desc = document.getElementById('lost-desc').value.trim();
+      if(!desc) return alert('Describe el objeto');
       
-      try {
-        await db.collection('rides').doc(rideId).update({
-          status: 'ACCEPTED',
-          driverId: currentDriver.id,
-          acceptedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        alert('✅ Viaje aceptado. El pasajero será notificado.');
-      } catch(err) {
-        alert('❌ Error: ' + err.message);
+      const fileInput = document.getElementById('lost-photo');
+      const processReport = async (photoBase64 = null) => {
+        try {
+          await db.collection('lostItems').add({
+            description: desc,
+            photo: photoBase64,
+            contact: currentDriver?.phone || 'No disponible',
+            reportedBy: currentDriver?.name || 'Desconocido',
+            driverId: currentDriver?.id,
+            status: 'REPORTADO',
+            date: new Date().toLocaleString(),
+            reportedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          document.getElementById('lost-desc').value = '';
+          fileInput.value = '';
+          alert('📢 Reporte enviado al administrador');
+        } catch(err) {
+          alert('❌ Error: ' + err.message);
+        }
+      };
+
+      if(fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => processReport(e.target.result);
+        reader.readAsDataURL(fileInput.files[0]);
+      } else {
+        processReport();
       }
     }
 
@@ -467,33 +471,35 @@
     // 🙋 PASSENGER: SOLICITAR VIAJE
     async function requestRide() {
       const name = document.getElementById('psg-name').value.trim();
-      if(!name) return alert('✍️ Ingresa tu nombre');
-      if(!psgLat || !psgLon) return alert('📍 Activa tu ubicación GPS primero');
+      if(!name) return alert('Ingresa tu nombre');
+      if(!psgLat) return alert('Activa tu ubicación GPS primero');
       
+      // Calcular tarifa sugerida basada en zonas o distancia
+      let suggestedFare = 5;
       try {
-        const rideRef = await db.collection('rides').add({
-          passengerName: name,
-          lat: psgLat, lon: psgLon,
-          status: 'PENDING',
-          driverId: null,
-          fare: 5 + Math.floor(Math.random()*5), // Tarifa base aleatoria para demo
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        activeRide = { id: rideRef.id };
-        document.getElementById('psg-ride-status').classList.remove('hidden');
-        document.getElementById('psg-status-text').textContent = '🔍 Buscando conductores cercanos...';
-        document.getElementById('psg-negotiation').classList.remove('hidden');
-        document.getElementById('psg-fare').value = 5 + Math.floor(Math.random()*5);
-        
-        watchMyRide(rideRef.id);
-      } catch(err) {
-        console.error('Error creando ride:', err);
-        alert('❌ Error de conexión: ' + err.message);
-      }
+        const zonesSnap = await db.collection('zones').get();
+        if(!zonesSnap.empty) {
+          // Toma el precio base de la primera zona como referencia simple
+          suggestedFare = zonesSnap.docs[0].data().price || 5;
+        }
+      } catch(e) {}
+      
+      const rideRef = await db.collection('rides').add({
+        passengerName: name,
+        lat: psgLat, lon: psgLon,
+        status: 'PENDING', driverId: null,
+        fare: suggestedFare,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      activeRide = { id: rideRef.id };
+      
+      document.getElementById('psg-ride-status').classList.remove('hidden');
+      document.getElementById('psg-status-text').textContent = '🔍 Buscando conductores...';
+      document.getElementById('psg-negotiation').classList.remove('hidden');
+      document.getElementById('psg-fare').value = suggestedFare;
+      watchMyRide(rideRef.id);
     }
 
-    // 🙋 PASSENGER: ESCUCHAR ESTADO DE MI VIAJE
     function watchMyRide(rideId) {
       unsubRides = db.collection('rides').doc(rideId).onSnapshot(doc => {
         if(!doc.exists) return;
@@ -506,120 +512,44 @@
           document.getElementById('psg-negotiation').classList.add('hidden');
           document.getElementById('psg-active-ride').classList.remove('hidden');
           
-          // Obtener datos del conductor
           db.collection('drivers').doc(ride.driverId).get().then(d => {
             if(d.exists) {
               const drv = d.data();
               document.getElementById('psg-driver-info').textContent = `👤 ${drv.name} • 🏍️ ${drv.vehicle || '-'} (${drv.color || '-'})`;
-              if(drv.lat && drv.lon && ride.lat && ride.lon) {
-                const dist = calcDistance(ride.lat, ride.lon, drv.lat, drv.lon);
-                document.getElementById('psg-driver-dist').textContent = `📍 Distancia estimada: ~${dist.toFixed(1)} km`;
-              }
+              document.getElementById('psg-driver-phone').textContent = `📞 ${drv.phone || 'No disponible'}`;
             }
-          }).catch(err => console.warn('Error cargando conductor:', err));
+          });
         }
-      }, err => {
-        console.error('Error watching ride:', err);
       });
     }
 
     async function acceptFare() {
       if(!activeRide?.id) return;
       const fare = parseFloat(document.getElementById('psg-fare').value);
-      if(!fare || fare <= 0) return alert('Ingresa una tarifa válida');
-      
-      try {
-        await db.collection('rides').doc(activeRide.id).update({ fare });
-        alert('💬 Tarifa enviada al conductor');
-      } catch(err) {
-        alert('❌ Error: ' + err.message);
-      }
+      if(!fare || fare <= 0) return alert('Tarifa inválida');
+      await db.collection('rides').doc(activeRide.id).update({ fare });
+      alert('💬 Tarifa enviada');
     }
 
     async function cancelRide() {
       if(!activeRide?.id) return;
-      try {
-        await db.collection('rides').doc(activeRide.id).update({ status: 'CANCELLED' });
-        document.getElementById('psg-ride-status').classList.add('hidden');
-        activeRide = null;
-      } catch(err) {
-        alert('❌ Error: ' + err.message);
-      }
+      await db.collection('rides').doc(activeRide.id).update({ status: 'CANCELLED' });
+      document.getElementById('psg-ride-status').classList.add('hidden');
+      activeRide = null;
     }
 
     async function completeRide() {
       if(!activeRide?.id) return;
-      try {
-        await db.collection('rides').doc(activeRide.id).update({ 
-          status: 'COMPLETED', 
-          completedAt: firebase.firestore.FieldValue.serverTimestamp() 
-        });
-        alert('💵 ¡Pago registrado! Gracias por usar MototaxiCloud 🛺');
-        document.getElementById('psg-ride-status').classList.add('hidden');
-        activeRide = null;
-      } catch(err) {
-        alert('❌ Error: ' + err.message);
-      }
+      await db.collection('rides').doc(activeRide.id).update({ status: 'COMPLETED' });
+      alert('💵 ¡Pago registrado! Gracias 🛺');
+      document.getElementById('psg-ride-status').classList.add('hidden');
+      activeRide = null;
     }
 
-    // 📦 OBJETOS PERDIDOS
-    async function reportLost() {
-      const desc = document.getElementById('lost-desc').value.trim();
-      const contact = document.getElementById('lost-contact').value.trim();
-      if(!desc) return alert('📝 Describe el objeto perdido');
-      
-      try {
-        await db.collection('lostItems').add({
-          description: desc,
-          contact: contact || 'No especificado',
-          status: 'REPORTADO',
-          date: new Date().toLocaleString('es-PE'),
-          reportedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        document.getElementById('lost-desc').value = '';
-        document.getElementById('lost-contact').value = '';
-        alert('📢 Reporte enviado. Te contactaremos si lo encontramos.');
-      } catch(err) {
-        alert('❌ Error: ' + err.message);
-      }
-    }
-
-    function loadLostItems() {
-      unsubLost = db.collection('lostItems')
-        .orderBy('reportedAt', 'desc')
-        .limit(10)
-        .onSnapshot(snap => {
-          const list = document.getElementById('lost-list');
-          if(snap.empty) {
-            list.innerHTML = '<p class="loading">📭 Sin reportes recientes</p>';
-            return;
-          }
-          list.innerHTML = snap.docs.map(d => {
-            const i = d.data();
-            return `<div class="card" style="padding:10px;"><strong>📦 ${i.description}</strong><br><small>📞 ${i.contact} • ${i.status} • ${i.date}</small></div>`;
-          }).join('');
-        }, err => console.warn('Error cargando objetos perdidos:', err));
-    }
-
-    // 📲 SERVICE WORKER INLINE (PWA básico para offline)
     if('serviceWorker' in navigator) {
-      const swCode = `
-        self.addEventListener('install', e => self.skipWaiting());
-        self.addEventListener('fetch', e => {
-          if(e.request.mode === 'navigate') {
-            e.respondWith(fetch(e.request).catch(() => caches.match('/index.html')));
-          }
-        });
-      `;
-      navigator.serviceWorker.register(
-        URL.createObjectURL(new Blob([swCode], {type:'application/javascript'}))
-      ).catch(err => console.warn('SW registration failed:', err));
+      const swCode = `self.addEventListener('install', e => self.skipWaiting()); self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match('/'))));`;
+      navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode], {type:'application/javascript'}))).catch(()=>{});
     }
-
-    // 🚀 INICIALIZACIÓN
-    window.addEventListener('DOMContentLoaded', () => {
-      console.log('✅ MototaxiCloud cargado - Firebase:', firebaseConfig.projectId);
-    });
   </script>
 </body>
 </html>
