@@ -4,176 +4,862 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#1e40af">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>🛺 MototaxiCloud Pro</title>
+  <title>MototaxiCloud Pro - Sistema de Gestión</title>
   <style>
-    :root { --primary: #1e40af; --success: #16a34a; --danger: #dc2626; --bg: #f3f4f6; --card: #ffffff; --text: #111827; --muted: #6b7280; }
-    * { box-sizing: border-box; margin:0; padding:0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background: var(--bg); color: var(--text); line-height: 1.5; padding-bottom: 80px; }
-    header { background: var(--primary); color: white; padding: 16px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
-    .container { max-width: 480px; margin: auto; padding: 16px; }
-    .card { background: var(--card); border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.08); }
-    .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 10px; transition: .2s; }
-    .btn:active { transform: scale(0.98); }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-success { background: var(--success); color: white; }
-    .btn-danger { background: var(--danger); color: white; }
-    .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
-    input, select, textarea { width: 100%; padding: 14px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; margin-bottom: 10px; background: #fafafa; }
-    input:focus { outline: none; border-color: var(--primary); }
-    .hidden { display: none !important; }
-    .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-    .role-btn { padding: 24px; background: white; border: 2px solid #e5e7eb; border-radius: 16px; text-align: center; font-weight: 600; cursor: pointer; transition: .2s; }
-    .role-btn:hover, .role-btn.active { border-color: var(--primary); background: #eff6ff; }
-    .status-box { padding: 12px; text-align: center; border-radius: 10px; font-weight: 600; margin-bottom: 12px; }
-    .status-pending { background: #fef3c7; color: #92400e; }
-    .status-active { background: #dcfce7; color: #166534; }
-    .driver-card, .ride-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f9fafb; border-radius: 12px; margin-bottom: 10px; }
-    .avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-    .info { flex: 1; }
-    .info h3 { font-size: 16px; margin-bottom: 2px; }
-    .info p { font-size: 13px; color: var(--muted); }
-    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .chip { background: #e5e7eb; padding: 6px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-    .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -2px 10px rgba(0,0,0,.1); }
-    .nav button { background: none; border: none; font-size: 12px; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
-    .nav button.active { color: var(--primary); font-weight: 700; }
-    .qr-box { background: #111; color: #fff; padding: 12px; border-radius: 12px; text-align: center; margin: 10px 0; }
-    .qr-box code { font-size: 18px; letter-spacing: 1px; }
-    .loc-status { font-size: 13px; color: var(--muted); margin-top: 4px; text-align: center; }
-    .loading { text-align: center; padding: 20px; color: var(--muted); }
-    .lost-photo { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-top: 8px; background: #eee; }
-    .zone-tag { display: inline-block; background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 6px; font-size: 12px; margin-right: 6px; margin-bottom: 6px; }
-    @media (max-width: 400px) { .role-grid { grid-template-columns: 1fr; } }
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    
+    body { 
+      background: var(--bg); 
+      color: var(--text); 
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Header Profesional */
+    .header {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: white;
+      padding: 1.5rem 2rem;
+      box-shadow: var(--shadow-lg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.875rem;
+    }
+
+    /* Navegación Horizontal */
+    .nav-tabs {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      position: sticky;
+      top: 73px;
+      z-index: 99;
+      overflow-x: auto;
+    }
+    
+    .nav-tabs-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .tab-btn {
+      padding: 1rem 1.5rem;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+      white-space: nowrap;
+      font-size: 0.875rem;
+    }
+    
+    .tab-btn:hover {
+      color: var(--primary);
+      background: #f8fafc;
+    }
+    
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: #eff6ff;
+    }
+
+    /* Contenido Principal */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease-in;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tarjetas Profesionales */
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    
+    .card-header {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    /* Formularios */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .form-group label {
+      font-weight: 500;
+      font-size: 0.875rem;
+      color: var(--text);
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+      background: var(--card);
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    /* Botones Profesionales */
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+    
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+    
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+    
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+    
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--border);
+      color: var(--text);
+    }
+    
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    
+    .btn-sm {
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+    }
+
+    /* Tablas */
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+    
+    tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Badges */
+    .badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+    
+    .badge-success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .badge-danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .badge-warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      top: 100px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .toast {
+      background: var(--card);
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: var(--shadow-lg);
+      border-left: 4px solid;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 300px;
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .toast.success { border-left-color: var(--success); }
+    .toast.error { border-left-color: var(--danger); }
+    .toast.warning { border-left-color: var(--warning); }
+    .toast.info { border-left-color: var(--primary); }
+
+    /* Utilidades */
+    .flex { display: flex; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-4 { gap: 1rem; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mt-4 { margin-top: 1rem; }
+    .text-center { text-align: center; }
+    .text-muted { color: var(--text-muted); }
+    .font-semibold { font-weight: 600; }
+
+    /* QR Box */
+    .qr-box {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: center;
+      margin: 1rem 0;
+    }
+    
+    .qr-code {
+      font-size: 2rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin: 0.5rem 0;
+      font-family: monospace;
+    }
+
+    /* Imágenes */
+    .img-thumbnail {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 2px solid var(--border);
+    }
+    
+    .lost-photo-preview {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 8px;
+      margin-top: 1rem;
+      border: 2px solid var(--border);
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background: var(--card);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header-content { flex-direction: column; gap: 1rem; text-align: center; }
+      .nav-tabs { top: 120px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .container { padding: 1rem; }
+      table { font-size: 0.875rem; }
+      th, td { padding: 0.75rem 0.5rem; }
+    }
+
+    /* Loading */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Selector de Rol (Landing) */
+    .role-selector {
+      max-width: 600px;
+      margin: 4rem auto;
+      text-align: center;
+    }
+    
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    
+    .role-card {
+      background: var(--card);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid var(--border);
+    }
+    
+    .role-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary);
+    }
+    
+    .role-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body>
-  <header id="app-header">🛺 MototaxiCloud Pro</header>
 
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <span>🛺</span>
+        <span>MototaxiCloud Pro</span>
+      </div>
+      <div class="user-info" id="user-info" style="display:none;">
+        <span id="user-name">Usuario</span>
+        <button class="btn btn-outline btn-sm" onclick="logout()" style="border-color:rgba(255,255,255,0.3);color:white;">
+          Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navegación Horizontal (Solo Admin) -->
+  <nav class="nav-tabs" id="admin-nav" style="display:none;">
+    <div class="nav-tabs-content">
+      <button class="tab-btn active" onclick="switchTab('register')">📝 Registrar Mototaxi</button>
+      <button class="tab-btn" onclick="switchTab('zones')">🏷️ Tarifas por Zona</button>
+      <button class="tab-btn" onclick="switchTab('lost')">📦 Objetos Perdidos</button>
+      <button class="tab-btn" onclick="switchTab('drivers')">👥 Conductores</button>
+      <button class="tab-btn" onclick="switchTab('settings')">⚙️ Configuración</button>
+    </div>
+  </nav>
+
+  <!-- Toast Notifications -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Contenido Principal -->
   <div class="container">
-    <div id="panel-role">
-      <h2 style="text-align:center; margin-bottom:8px;">Selecciona tu perfil</h2>
-      <p style="text-align:center; color:var(--muted); margin-bottom:20px;">Accede según tu función en la plataforma</p>
+
+    <!-- Selector de Rol -->
+    <div id="role-selector" class="role-selector">
+      <h1 style="margin-bottom:0.5rem;">Bienvenido a MototaxiCloud Pro</h1>
+      <p class="text-muted">Selecciona tu perfil para continuar</p>
       <div class="role-grid">
-        <div class="role-btn" onclick="setRole('admin')">👨‍💼<br>Administrador</div>
-        <div class="role-btn" onclick="setRole('driver')">🏍️<br>Soy Mototaxi</div>
-        <div class="role-btn" onclick="setRole('passenger')">🙋<br>Soy Pasajero</div>
+        <div class="role-card" onclick="setRole('admin')">
+          <div class="role-icon">👨‍</div>
+          <h3>Administrador</h3>
+          <p class="text-muted" style="font-size:0.875rem;">Gestión completa del sistema</p>
+        </div>
+        <div class="role-card" onclick="setRole('driver')">
+          <div class="role-icon">🏍️</div>
+          <h3>Conductor</h3>
+          <p class="text-muted" style="font-size:0.875rem;">Gestionar viajes y reportes</p>
+        </div>
+        <div class="role-card" onclick="setRole('passenger')">
+          <div class="role-icon">🙋</div>
+          <h3>Pasajero</h3>
+          <p class="text-muted" style="font-size:0.875rem;">Solicitar mototaxi</p>
+        </div>
       </div>
     </div>
 
-    <!-- ADMIN -->
-    <div id="panel-admin" class="hidden">
+    <!-- ADMIN: Registrar Mototaxi -->
+    <div id="tab-register" class="tab-content">
       <div class="card">
-        <h3>➕ Registrar Mototaxi</h3>
-        <input type="text" id="adm-id" placeholder="ID (ej: DRV-001)">
-        <input type="text" id="adm-name" placeholder="Nombre completo">
-        <input type="tel" id="adm-phone" placeholder="📞 Teléfono de contacto">
-        <input type="text" id="adm-site" placeholder="Sitio / Base">
-        <input type="text" id="adm-vehicle" placeholder="Número de motocarro">
-        <input type="text" id="adm-color" placeholder="Color">
-        <input type="file" id="adm-photo" accept="image/*">
-        <button class="btn btn-success" onclick="saveDriver()">💾 Guardar Conductor</button>
-      </div>
-
-      <div class="card">
-        <h3>🏷️ Tarifas por Zona</h3>
-        <div style="display:flex; gap:8px; margin-bottom:10px;">
-          <input type="text" id="zone-name" placeholder="Nombre zona (ej: Centro)" style="flex:1;">
-          <input type="number" id="zone-price" placeholder="Precio S/." style="flex:1;">
+        <div class="card-header">
+          <span>📝</span>
+          <span>Registrar Nuevo Conductor</span>
         </div>
-        <button class="btn btn-primary" onclick="saveZone()">➕ Agregar Zona</button>
-        <div id="zone-list" style="margin-top:12px;"></div>
+        <form id="form-driver" onsubmit="event.preventDefault(); saveDriver();">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>ID del Conductor *</label>
+              <input type="text" id="adm-id" placeholder="Ej: DRV-001" required>
+            </div>
+            <div class="form-group">
+              <label>Nombre Completo *</label>
+              <input type="text" id="adm-name" placeholder="Nombre del conductor" required>
+            </div>
+            <div class="form-group">
+              <label>Teléfono de Contacto *</label>
+              <input type="tel" id="adm-phone" placeholder="999 888 777" required>
+            </div>
+            <div class="form-group">
+              <label>Sitio / Base</label>
+              <input type="text" id="adm-site" placeholder="Ej: Mercado Central">
+            </div>
+            <div class="form-group">
+              <label>Número de Motocarro</label>
+              <input type="text" id="adm-vehicle" placeholder="Ej: M-1234">
+            </div>
+            <div class="form-group">
+              <label>Color</label>
+              <input type="text" id="adm-color" placeholder="Ej: Rojo/Azul">
+            </div>
+            <div class="form-group" style="grid-column:1/-1;">
+              <label>Fotografía del Conductor</label>
+              <input type="file" id="adm-photo" accept="image/*">
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <button type="submit" class="btn btn-primary">
+              <span>💾</span>
+              <span>Guardar Conductor</span>
+            </button>
+            <button type="button" class="btn btn-outline" onclick="resetForm('form-driver')">
+              Limpiar Formulario
+            </button>
+          </div>
+        </form>
       </div>
-
-      <div class="card">
-        <h3>📦 Objetos Perdidos (Reportados por Choferes)</h3>
-        <div id="admin-lost-list"></div>
-      </div>
-
-      <div class="card">
-        <h3>👥 Conductores Registrados</h3>
-        <div id="adm-list"></div>
-      </div>
-      <button class="btn btn-outline" onclick="setRole(null)">🔙 Cambiar Perfil</button>
     </div>
 
-    <!-- DRIVER -->
-    <div id="panel-driver" class="hidden">
-      <div class="card" id="drv-login">
-        <h3>🔑 Acceso Conductor</h3>
-        <input type="text" id="drv-id-input" placeholder="Ingresa tu ID o Código QR">
-        <button class="btn btn-primary" onclick="loginDriver()">Ingresar</button>
+    <!-- ADMIN: Tarifas por Zona -->
+    <div id="tab-zones" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <span>🏷️</span>
+          <span>Configurar Tarifas por Zona</span>
+        </div>
+        <form onsubmit="event.preventDefault(); saveZone();" class="form-grid" style="align-items:end;">
+          <div class="form-group">
+            <label>Nombre de la Zona</label>
+            <input type="text" id="zone-name" placeholder="Ej: Centro, Norte, Sur" required>
+          </div>
+          <div class="form-group">
+            <label>Precio Base (S/.)</label>
+            <input type="number" id="zone-price" placeholder="5.00" step="0.50" min="1" required>
+          </div>
+          <button type="submit" class="btn btn-success">
+            <span>➕</span>
+            <span>Agregar Zona</span>
+          </button>
+        </form>
       </div>
-      <div id="drv-dashboard" class="hidden">
-        <div class="card">
-          <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
-            <div class="avatar" id="drv-avatar">👤</div>
-            <div class="info"><h3 id="drv-name">-</h3><p id="drv-meta">-</p></div>
+      <div class="card">
+        <div class="card-header">Zonas Configuradas</div>
+        <div id="zone-list" class="table-container">
+          <p class="text-muted text-center">Cargando zonas...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN: Objetos Perdidos -->
+    <div id="tab-lost" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <span>📦</span>
+          <span>Reportes de Objetos Perdidos</span>
+        </div>
+        <div id="admin-lost-list">
+          <p class="text-muted text-center">Cargando reportes...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN: Conductores Registrados -->
+    <div id="tab-drivers" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <span>👥</span>
+          <span>Conductores Registrados</span>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Foto</th>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Unidad</th>
+                <th>Código QR</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="drivers-table-body">
+              <tr><td colspan="8" class="text-center text-muted">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN: Configuración -->
+    <div id="tab-settings" class="tab-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-drivers">0</div>
+          <div class="stat-label">Conductores Activos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-rides">0</div>
+          <div class="stat-label">Viajes Realizados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-lost">0</div>
+          <div class="stat-label">Objetos Reportados</div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <span>💾</span>
+          <span>Respaldo de Base de Datos</span>
+        </div>
+        <p class="text-muted mb-4">
+          Exporta todos los datos del sistema (conductores, zonas, objetos perdidos, viajes) 
+          en un archivo JSON para respaldar o migrar la información.
+        </p>
+        <div class="flex gap-4">
+          <button class="btn btn-primary" onclick="exportData()">
+            <span>📥</span>
+            <span>Exportar Datos (JSON)</span>
+          </button>
+          <label class="btn btn-outline" style="cursor:pointer;">
+            <span>📤</span>
+            <span>Importar Datos (JSON)</span>
+            <input type="file" accept=".json" onchange="importData(this)" style="display:none;">
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>🔧</span>
+          <span>Mantenimiento</span>
+        </div>
+        <div class="flex gap-4">
+          <button class="btn btn-danger" onclick="clearAllData()">
+            <span>⚠️</span>
+            <span>Limpiar Toda la Base de Datos</span>
+          </button>
+        </div>
+        <p class="text-muted mt-4" style="font-size:0.875rem;">
+          ⚠️ Esta acción eliminará permanentemente todos los datos. No se puede deshacer.
+        </p>
+      </div>
+    </div>
+
+    <!-- DRIVER: Login -->
+    <div id="driver-login" class="tab-content">
+      <div class="card" style="max-width:500px;margin:2rem auto;">
+        <div class="card-header text-center">
+          <span>🔑</span>
+          <span>Acceso Conductores</span>
+        </div>
+        <form onsubmit="event.preventDefault(); loginDriver();">
+          <div class="form-group">
+            <label>ID o Código QR</label>
+            <input type="text" id="drv-id-input" placeholder="Ingresa tu código de acceso" required>
           </div>
-          <div class="actions">
-            <button id="btn-toggle-status" class="btn btn-success" onclick="toggleDriverStatus()">✅ Activar</button>
-          </div>
-          <div style="margin-top:10px;">
-            <button class="btn btn-outline" style="font-size:14px; padding:10px;" onclick="getDriverLocation()">📍 Actualizar GPS</button>
-            <p class="loc-status" id="drv-loc-status">Ubicación no definida</p>
+          <button type="submit" class="btn btn-primary" style="width:100%;">
+            Ingresar al Sistema
+          </button>
+        </form>
+        <p class="text-muted text-center mt-4" style="font-size:0.875rem;">
+          Usa el código QR que te proporcionó el administrador
+        </p>
+      </div>
+    </div>
+
+    <!-- DRIVER: Dashboard -->
+    <div id="driver-dashboard" class="tab-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="drv-stat-rides">0</div>
+          <div class="stat-label">Viajes Hoy</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="drv-stat-earnings">S/ 0</div>
+          <div class="stat-label">Ganancias Estimadas</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>👤</span>
+          <span>Mi Perfil</span>
+        </div>
+        <div class="flex gap-4 items-center mb-4">
+          <img id="drv-avatar" class="img-thumbnail" style="width:80px;height:80px;">
+          <div>
+            <h3 id="drv-name" class="font-semibold">-</h3>
+            <p class="text-muted" id="drv-meta">-</p>
+            <p class="text-muted" id="drv-phone-display">-</p>
           </div>
         </div>
-        <h4 style="margin:12px 0 8px;">📥 Solicitudes Cercanas</h4>
-        <div id="drv-rides"><p class="loading">Cargando...</p></div>
-        
-        <div class="card" style="margin-top:16px;">
-          <h4>📦 Reportar Objeto Perdido</h4>
-          <input type="text" id="lost-desc" placeholder="Descripción del objeto">
-          <input type="file" id="lost-photo" accept="image/*">
-          <button class="btn btn-outline" onclick="reportLostItem()">📢 Enviar al Admin</button>
+        <div class="flex gap-4">
+          <button id="btn-toggle-status" class="btn btn-success" onclick="toggleDriverStatus()">
+            Activar Disponibilidad
+          </button>
+          <button class="btn btn-outline" onclick="getDriverLocation()">
+            📍 Actualizar Ubicación
+          </button>
         </div>
-        <button class="btn btn-outline" onclick="logoutDriver()">🚪 Cerrar Sesión</button>
+        <p class="loc-status mt-4" id="drv-loc-status">Ubicación no definida</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>📥</span>
+          <span>Solicitudes de Viaje Cercanas</span>
+        </div>
+        <div id="drv-rides">
+          <p class="text-muted text-center">Esperando solicitudes...</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>📦</span>
+          <span>Reportar Objeto Perdido</span>
+        </div>
+        <form onsubmit="event.preventDefault(); reportLostItem();">
+          <div class="form-group">
+            <label>Descripción del Objeto</label>
+            <textarea id="lost-desc" rows="3" placeholder="Describe el objeto encontrado (color, marca, características)" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Fotografía del Objeto</label>
+            <input type="file" id="lost-photo" accept="image/*">
+          </div>
+          <button type="submit" class="btn btn-primary">
+            Enviar Reporte al Administrador
+          </button>
+        </form>
       </div>
     </div>
 
     <!-- PASSENGER -->
-    <div id="panel-passenger" class="hidden">
+    <div id="passenger-panel" class="tab-content">
       <div class="card">
-        <h3>📍 Solicitar Mototaxi</h3>
-        <input type="text" id="psg-name" placeholder="Tu nombre">
-        <button id="btn-get-loc" class="btn btn-outline" style="margin-bottom:10px;" onclick="getPassengerLocation()">🌍 Obtener mi ubicación GPS</button>
-        <p class="loc-status" id="psg-loc-status">Esperando ubicación...</p>
-        <button class="btn btn-primary" id="btn-request" onclick="requestRide()" disabled>🔍 Buscar Conductores</button>
+        <div class="card-header">
+          <span>📍</span>
+          <span>Solicitar Mototaxi</span>
+        </div>
+        <form onsubmit="event.preventDefault(); requestRide();">
+          <div class="form-group">
+            <label>Tu Nombre</label>
+            <input type="text" id="psg-name" placeholder="Ingresa tu nombre completo" required>
+          </div>
+          <div class="form-group">
+            <label>Teléfono de Contacto</label>
+            <input type="tel" id="psg-phone" placeholder="999 888 777" required>
+          </div>
+          <button type="button" class="btn btn-outline mb-4" onclick="getPassengerLocation()" id="btn-get-loc">
+            🌍 Obtener Mi Ubicación GPS
+          </button>
+          <p class="loc-status mb-4" id="psg-loc-status">Esperando ubicación...</p>
+          <button type="submit" class="btn btn-primary" id="btn-request" disabled>
+            🔍 Buscar Conductores Disponibles
+          </button>
+        </form>
       </div>
+
       <div id="psg-ride-status" class="hidden">
-        <div class="status-box status-pending" id="psg-status-text">Buscando conductor...</div>
-        <div id="psg-drivers-list"></div>
-        <div class="card hidden" id="psg-negotiation">
-          <label>Tarifa sugerida:</label>
-          <input type="number" id="psg-fare" placeholder="S/.">
-          <div class="actions">
-            <button class="btn btn-success" onclick="acceptFare()">✅ Aceptar</button>
-            <button class="btn btn-danger" onclick="cancelRide()">❌ Cancelar</button>
+        <div class="status-box status-pending" id="psg-status-text">
+          Buscando conductor disponible...
+        </div>
+        <div id="psg-active-ride" class="card hidden">
+          <div class="card-header">
+            <span>🛺</span>
+            <span>Viaje en Curso</span>
+          </div>
+          <div class="flex gap-4 items-center mb-4">
+            <img id="psg-driver-avatar" class="img-thumbnail">
+            <div>
+              <h3 id="psg-driver-name" class="font-semibold">-</h3>
+              <p class="text-muted" id="psg-driver-vehicle">-</p>
+              <p class="text-muted" id="psg-driver-phone">📞 -</p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <button class="btn btn-success" onclick="completeRide()">
+              💵 Confirmar Pago en Efectivo
+            </button>
+            <button class="btn btn-danger" onclick="cancelRide()">
+              ❌ Cancelar Viaje
+            </button>
           </div>
         </div>
-        <div class="card hidden" id="psg-active-ride">
-          <h4>🛺 Viaje en curso</h4>
-          <p id="psg-driver-info"></p>
-          <p id="psg-driver-phone"></p>
-          <button class="btn btn-success" onclick="completeRide()">💵 Pagado / Finalizar</button>
-        </div>
       </div>
-      <button class="btn btn-outline" onclick="setRole(null)">🔙 Cambiar Perfil</button>
     </div>
+
   </div>
 
-  <nav class="nav hidden" id="bottom-nav">
-    <button onclick="setRole('admin')" id="nav-admin">👨‍💼 Admin</button>
-    <button onclick="setRole('driver')" id="nav-driver">🏍️ Conductor</button>
-    <button onclick="setRole('passenger')" id="nav-psg">🙋 Pasajero</button>
-  </nav>
-
-  <!-- FIREBASE SDK -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <script>
-    // 🔥 TU CONFIGURACIÓN DE FIREBASE
+    // Configuración Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBeSC3BFyFXbUMoAbVwk0n2bPuAfTvJgPg",
       authDomain: "mototaxi-app-60004.firebaseapp.com",
@@ -187,11 +873,83 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let currentRole = null, currentDriver = null, activeRide = null;
+    // Estado Global
+    let currentRole = null;
+    let currentDriver = null;
+    let activeRide = null;
     let psgLat = null, psgLon = null, drvLat = null, drvLon = null;
-    const MAX_KM = 3;
-    let unsubRides = null, unsubLost = null, unsubDrivers = null, unsubZones = null;
+    let unsubscribers = [];
 
+    // Sistema de Notificaciones Toast
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const icons = {
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        info: 'ℹ️'
+      };
+      
+      toast.innerHTML = `
+        <span style="font-size:1.25rem;">${icons[type]}</span>
+        <span>${message}</span>
+      `;
+      
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease-out reverse';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // Navegación entre Tabs
+    function switchTab(tabName) {
+      // Actualizar botones
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // Mostrar contenido
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+      
+      // Cargar datos específicos
+      if(tabName === 'drivers') loadDriversTable();
+      if(tabName === 'zones') loadZones();
+      if(tabName === 'lost') loadAdminLostItems();
+      if(tabName === 'settings') loadStats();
+    }
+
+    // Selector de Rol
+    function setRole(role) {
+      currentRole = role;
+      document.getElementById('role-selector').classList.add('hidden');
+      
+      if(role === 'admin') {
+        document.getElementById('admin-nav').style.display = 'block';
+        document.getElementById('user-info').style.display = 'flex';
+        document.getElementById('user-name').textContent = 'Administrador';
+        switchTab('register');
+        document.querySelector('.tab-btn').classList.add('active');
+      } else if(role === 'driver') {
+        document.getElementById('driver-login').classList.add('active');
+      } else if(role === 'passenger') {
+        document.getElementById('passenger-panel').classList.add('active');
+      }
+    }
+
+    function logout() {
+      unsubscribers.forEach(unsub => unsub?.());
+      unsubscribers = [];
+      location.reload();
+    }
+
+    // Utilidades
     function calcDistance(lat1, lon1, lat2, lon2) {
       const R = 6371;
       const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -200,238 +958,444 @@
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
-    function cleanupListeners() {
-      unsubRides?.(); unsubLost?.(); unsubDrivers?.(); unsubZones?.();
-      unsubRides = unsubLost = unsubDrivers = unsubZones = null;
+    function resetForm(formId) {
+      document.getElementById(formId).reset();
     }
 
-    function getPassengerLocation() {
-      if(!navigator.geolocation) return alert('🌍 GPS no disponible');
-      document.getElementById('btn-get-loc').disabled = true;
-      document.getElementById('psg-loc-status').textContent = '📡 Obteniendo...';
-      navigator.geolocation.getCurrentPosition(pos => {
-        psgLat = pos.coords.latitude; psgLon = pos.coords.longitude;
-        document.getElementById('psg-loc-status').textContent = `✅ ${psgLat.toFixed(4)}, ${psgLon.toFixed(4)}`;
-        document.getElementById('btn-request').disabled = false;
-      }, err => {
-        document.getElementById('psg-loc-status').textContent = '❌ Activa GPS y permisos';
-        document.getElementById('btn-get-loc').disabled = false;
-      }, {enableHighAccuracy: true, timeout: 15000});
-    }
-
-    function getDriverLocation() {
-      if(!navigator.geolocation) return alert('🌍 GPS no disponible');
-      document.getElementById('drv-loc-status').textContent = '📡 Actualizando...';
-      navigator.geolocation.getCurrentPosition(pos => {
-        drvLat = pos.coords.latitude; drvLon = pos.coords.longitude;
-        document.getElementById('drv-loc-status').textContent = `📍 ${drvLat.toFixed(4)}, ${drvLon.toFixed(4)}`;
-        if(currentDriver?.id) {
-          db.collection('drivers').doc(currentDriver.id).update({ lat: drvLat, lon: drvLon }).catch(console.warn);
-        }
-      }, err => {
-        document.getElementById('drv-loc-status').textContent = '❌ Error GPS';
-      }, {enableHighAccuracy: true});
-    }
-
-    function setRole(role) {
-      cleanupListeners();
-      currentRole = role;
-      document.querySelectorAll('[id^="panel-"]').forEach(p => p.classList.add('hidden'));
-      document.getElementById('bottom-nav').classList.toggle('hidden', !role);
-      document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-      
-      if(role === 'admin') {
-        document.getElementById('panel-admin').classList.remove('hidden');
-        loadAdminDrivers(); loadZones(); loadAdminLostItems();
-      } else if(role === 'driver') {
-        document.getElementById('panel-driver').classList.remove('hidden');
-      } else if(role === 'passenger') {
-        document.getElementById('panel-passenger').classList.remove('hidden');
-      } else {
-        document.getElementById('panel-role').classList.remove('hidden');
-      }
-      if(role) document.getElementById(`nav-${role==='passenger'?'psg':role}`).classList.add('active');
-    }
-
-    // 👨‍💼 ADMIN: GUARDAR CONDUCTOR (AHORA CON TELÉFONO)
+    // ADMIN: Guardar Conductor
     async function saveDriver() {
-      const id = document.getElementById('adm-id').value.trim() || 'DRV-'+Date.now().toString().slice(-4);
+      const id = document.getElementById('adm-id').value.trim();
+      if(!id) return showToast('El ID es obligatorio', 'error');
+      
       const file = document.getElementById('adm-photo').files[0];
       const reader = new FileReader();
       
-      reader.onload = async e => {
-        const data = {
-          id,
-          name: document.getElementById('adm-name').value.trim() || 'Conductor',
-          phone: document.getElementById('adm-phone').value.trim() || 'No especificado',
-          site: document.getElementById('adm-site').value.trim(),
-          vehicle: document.getElementById('adm-vehicle').value.trim(),
-          color: document.getElementById('adm-color').value.trim(),
-          active: false,
-          photo: e.target.result || null,
-          qrToken: 'QR-'+Math.random().toString(36).substr(2,6).toUpperCase(),
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
+      const processData = async (photoBase64) => {
         try {
+          const data = {
+            id,
+            name: document.getElementById('adm-name').value.trim(),
+            phone: document.getElementById('adm-phone').value.trim(),
+            site: document.getElementById('adm-site').value.trim(),
+            vehicle: document.getElementById('adm-vehicle').value.trim(),
+            color: document.getElementById('adm-color').value.trim(),
+            photo: photoBase64 || null,
+            active: false,
+            qrToken: 'QR-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          };
+          
           await db.collection('drivers').doc(id).set(data);
-          alert('✅ Conductor registrado con éxito');
-          document.querySelectorAll('#panel-admin input, #panel-admin select').forEach(i => i.value = '');
+          showToast('Conductor registrado exitosamente', 'success');
+          resetForm('form-driver');
         } catch(err) {
-          alert('❌ Error: ' + err.message);
+          showToast('Error al guardar: ' + err.message, 'error');
         }
       };
-      file ? reader.readAsDataURL(file) : reader.onload({target:{result:null}});
+      
+      if(file) {
+        reader.onload = e => processData(e.target.result);
+        reader.readAsDataURL(file);
+      } else {
+        processData(null);
+      }
     }
 
-    function loadAdminDrivers() {
-      unsubDrivers = db.collection('drivers').orderBy('createdAt', 'desc').onSnapshot(snap => {
-        document.getElementById('adm-list').innerHTML = snap.docs.map(doc => {
-          const d = doc.data();
-          return `
-          <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <div><strong>${d.id}</strong> • ${d.name}<br><small>📞 ${d.phone} • ${d.site} • ${d.color} • ${d.vehicle}</small></div>
-              <span class="chip" style="background:${d.active?'#dcfce7':'#fee2e2'}">${d.active?'Activo':'Inactivo'}</span>
-            </div>
-            <div class="qr-box" style="margin-top:8px;"><small>CÓDIGO ACCESO</small><br><code>${d.qrToken}</code></div>
-            <button class="btn btn-danger" style="margin-top:8px;padding:8px;" onclick="deleteDriver('${d.id}')">🗑️ Eliminar</button>
-          </div>`;
-        }).join('');
-      });
+    // ADMIN: Cargar Tabla de Conductores
+    function loadDriversTable() {
+      const tbody = document.getElementById('drivers-table-body');
+      unsubscribers.push(
+        db.collection('drivers').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+          if(snapshot.empty) {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No hay conductores registrados</td></tr>';
+            return;
+          }
+          
+          tbody.innerHTML = snapshot.docs.map(doc => {
+            const d = doc.data();
+            return `
+              <tr>
+                <td>${d.photo ? `<img src="${d.photo}" class="img-thumbnail">` : '👤'}</td>
+                <td><strong>${d.id}</strong></td>
+                <td>${d.name}</td>
+                <td>${d.phone || '-'}</td>
+                <td>${d.vehicle || '-'} (${d.color || '-'})</td>
+                <td><div class="qr-box" style="padding:0.5rem;margin:0;"><code style="font-size:0.875rem;">${d.qrToken}</code></div></td>
+                <td><span class="badge ${d.active ? 'badge-success' : 'badge-danger'}">${d.active ? 'Activo' : 'Inactivo'}</span></td>
+                <td>
+                  <button class="btn btn-sm ${d.active ? 'btn-danger' : 'btn-success'}" onclick="toggleDriverActive('${d.id}', ${!d.active})">
+                    ${d.active ? 'Desactivar' : 'Activar'}
+                  </button>
+                  <button class="btn btn-sm btn-outline" onclick="deleteDriver('${d.id}')" style="margin-left:0.5rem;">
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        })
+      );
+    }
+
+    async function toggleDriverActive(id, active) {
+      try {
+        await db.collection('drivers').doc(id).update({ active });
+        showToast(`Conductor ${active ? 'activado' : 'desactivado'}`, 'success');
+      } catch(err) {
+        showToast('Error: ' + err.message, 'error');
+      }
     }
 
     async function deleteDriver(id) {
-      if(!confirm('¿Eliminar conductor?')) return;
-      await db.collection('drivers').doc(id).delete();
+      if(!confirm('¿Estás seguro de eliminar este conductor? Esta acción no se puede deshacer.')) return;
+      try {
+        await db.collection('drivers').doc(id).delete();
+        showToast('Conductor eliminado', 'success');
+      } catch(err) {
+        showToast('Error: ' + err.message, 'error');
+      }
     }
 
-    // 🏷️ ADMIN: GESTIÓN DE ZONAS Y TARIFAS
+    // ADMIN: Zonas
     async function saveZone() {
       const name = document.getElementById('zone-name').value.trim();
       const price = parseFloat(document.getElementById('zone-price').value);
-      if(!name || isNaN(price) || price <= 0) return alert('Ingresa nombre y precio válido');
+      
+      if(!name || isNaN(price)) return showToast('Completa todos los campos', 'error');
       
       try {
-        await db.collection('zones').doc(name).set({ name, price, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        await db.collection('zones').doc(name).set({
+          name, price,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast('Zona guardada correctamente', 'success');
         document.getElementById('zone-name').value = '';
         document.getElementById('zone-price').value = '';
-        alert('✅ Zona guardada');
       } catch(err) {
-        alert('❌ Error: ' + err.message);
+        showToast('Error: ' + err.message, 'error');
       }
     }
 
     function loadZones() {
-      unsubZones = db.collection('zones').orderBy('name').onSnapshot(snap => {
-        document.getElementById('zone-list').innerHTML = snap.docs.map(d => {
-          const z = d.data();
-          return `<span class="zone-tag">${z.name}: S/. ${z.price}</span>`;
-        }).join('') || '<p class="loading">Sin zonas configuradas</p>';
-      });
+      const container = document.getElementById('zone-list');
+      unsubscribers.push(
+        db.collection('zones').orderBy('name').onSnapshot(snapshot => {
+          if(snapshot.empty) {
+            container.innerHTML = '<p class="text-muted text-center">No hay zonas configuradas</p>';
+            return;
+          }
+          
+          container.innerHTML = `
+            <table>
+              <thead>
+                <tr><th>Zona</th><th>Precio Base</th><th>Acciones</th></tr>
+              </thead>
+              <tbody>
+                ${snapshot.docs.map(doc => {
+                  const z = doc.data();
+                  return `
+                    <tr>
+                      <td><strong>${z.name}</strong></td>
+                      <td>S/ ${z.price.toFixed(2)}</td>
+                      <td>
+                        <button class="btn btn-sm btn-danger" onclick="deleteZone('${z.name}')">Eliminar</button>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          `;
+        })
+      );
     }
 
-    // 📦 ADMIN: VER OBJETOS PERDIDOS CON FOTOS
+    async function deleteZone(name) {
+      try {
+        await db.collection('zones').doc(name).delete();
+        showToast('Zona eliminada', 'success');
+      } catch(err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    // ADMIN: Objetos Perdidos
     function loadAdminLostItems() {
-      unsubLost = db.collection('lostItems').orderBy('reportedAt', 'desc').onSnapshot(snap => {
-        document.getElementById('admin-lost-list').innerHTML = snap.docs.map(d => {
-          const i = d.data();
-          return `
-          <div class="card" style="padding:10px; border-left: 4px solid var(--primary);">
-            <strong>📦 ${i.description}</strong>
-            ${i.photo ? `<img src="${i.photo}" class="lost-photo">` : ''}
-            <div style="margin-top:8px; font-size:13px; color:var(--muted);">
-              👤 Reportado por: ${i.reportedBy || 'Desconocido'}<br>
-              📞 Contacto: ${i.contact || 'N/A'} • ${i.status} • ${i.date}
-            </div>
-          </div>`;
-        }).join('') || '<p class="loading">📭 Sin reportes</p>';
+      const container = document.getElementById('admin-lost-list');
+      unsubscribers.push(
+        db.collection('lostItems').orderBy('reportedAt', 'desc').onSnapshot(snapshot => {
+          if(snapshot.empty) {
+            container.innerHTML = '<p class="text-muted text-center">No hay reportes de objetos perdidos</p>';
+            return;
+          }
+          
+          container.innerHTML = snapshot.docs.map(doc => {
+            const item = doc.data();
+            return `
+              <div class="card" style="border-left:4px solid var(--warning);">
+                <div class="flex gap-4">
+                  ${item.photo ? `<img src="${item.photo}" class="lost-photo-preview">` : ''}
+                  <div style="flex:1;">
+                    <h4 class="font-semibold mb-4">📦 ${item.description}</h4>
+                    <p class="text-muted" style="font-size:0.875rem;">
+                      Reportado por: ${item.reportedBy || 'Desconocido'}<br>
+                      Contacto: ${item.contact || 'N/A'}<br>
+                      Fecha: ${item.date}
+                    </p>
+                    <span class="badge badge-warning mt-4">${item.status}</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        })
+      );
+    }
+
+    // ADMIN: Exportar/Importar Datos
+    async function exportData() {
+      try {
+        showToast('Generando respaldo...', 'info');
+        
+        const drivers = await db.collection('drivers').get();
+        const zones = await db.collection('zones').get();
+        const lostItems = await db.collection('lostItems').get();
+        const rides = await db.collection('rides').get();
+        
+        const data = {
+          exportDate: new Date().toISOString(),
+          version: '1.0',
+          drivers: drivers.docs.map(d => ({id: d.id, ...d.data()})),
+          zones: zones.docs.map(d => ({id: d.id, ...d.data()})),
+          lostItems: lostItems.docs.map(d => ({id: d.id, ...d.data()})),
+          rides: rides.docs.map(d => ({id: d.id, ...d.data()}))
+        };
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `mototaxi-backup-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        showToast('Respaldo descargado correctamente', 'success');
+      } catch(err) {
+        showToast('Error al exportar: ' + err.message, 'error');
+      }
+    }
+
+    async function importData(input) {
+      const file = input.files[0];
+      if(!file) return;
+      
+      if(!confirm('⚠️ Esto sobrescribirá los datos actuales. ¿Continuar?')) {
+        input.value = '';
+        return;
+      }
+      
+      try {
+        const reader = new FileReader();
+        reader.onload = async e => {
+          try {
+            const data = JSON.parse(e.target.result);
+            
+            // Importar conductores
+            if(data.drivers) {
+              const batch = db.batch();
+              data.drivers.forEach(d => {
+                const ref = db.collection('drivers').doc(d.id);
+                batch.set(ref, d);
+              });
+              await batch.commit();
+            }
+            
+            // Importar zonas
+            if(data.zones) {
+              const batch = db.batch();
+              data.zones.forEach(z => {
+                const ref = db.collection('zones').doc(z.id || z.name);
+                batch.set(ref, z);
+              });
+              await batch.commit();
+            }
+            
+            showToast('Datos importados correctamente', 'success');
+            setTimeout(() => location.reload(), 1500);
+          } catch(err) {
+            showToast('Error al importar: Archivo inválido', 'error');
+          }
+        };
+        reader.readAsText(file);
+      } catch(err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+      input.value = '';
+    }
+
+    async function clearAllData() {
+      if(!confirm('⚠️ ¿ESTÁS SEGURO? Esta acción eliminará TODOS los datos permanentemente.')) return;
+      if(!confirm('⚠️ ÚLTIMA ADVERTENCIA: Esta acción no se puede deshacer. Escribe "BORRAR" para confirmar.')) return;
+      
+      try {
+        const collections = ['drivers', 'zones', 'lostItems', 'rides'];
+        for(const col of collections) {
+          const snapshot = await db.collection(col).get();
+          const batch = db.batch();
+          snapshot.docs.forEach(doc => batch.delete(doc.ref));
+          await batch.commit();
+        }
+        showToast('Base de datos limpiada', 'success');
+        setTimeout(() => location.reload(), 1500);
+      } catch(err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    function loadStats() {
+      db.collection('drivers').where('active', '==', true).get().then(s => {
+        document.getElementById('stat-drivers').textContent = s.size;
+      });
+      db.collection('rides').where('status', '==', 'COMPLETED').get().then(s => {
+        document.getElementById('stat-rides').textContent = s.size;
+      });
+      db.collection('lostItems').get().then(s => {
+        document.getElementById('stat-lost').textContent = s.size;
       });
     }
 
-    // 🏍️ DRIVER: LOGIN (ACEPTA ID O QR)
+    // DRIVER: Login
     async function loginDriver() {
       const code = document.getElementById('drv-id-input').value.trim();
-      if(!code) return alert('Ingresa tu ID o Código QR');
+      if(!code) return showToast('Ingresa tu código', 'error');
       
       try {
         let query = await db.collection('drivers').where('qrToken', '==', code).limit(1).get();
         let doc, driverId;
         
         if(!query.empty) {
-          doc = query.docs[0]; driverId = doc.id;
+          doc = query.docs[0];
+          driverId = doc.id;
         } else {
           doc = await db.collection('drivers').doc(code).get();
-          if(!doc.exists) return alert('❌ Código/ID no encontrado');
+          if(!doc.exists) return showToast('Código/ID no encontrado', 'error');
           driverId = code;
         }
         
-        currentDriver = { id: driverId, ...doc.data() };
-        document.getElementById('drv-login').classList.add('hidden');
-        document.getElementById('drv-dashboard').classList.remove('hidden');
+        currentDriver = {id: driverId, ...doc.data()};
         
+        document.getElementById('driver-login').classList.remove('active');
+        document.getElementById('driver-dashboard').classList.add('active');
+        document.getElementById('admin-nav').style.display = 'block';
+        document.getElementById('user-info').style.display = 'flex';
+        document.getElementById('user-name').textContent = currentDriver.name;
+        
+        // Renderizar perfil
         document.getElementById('drv-name').textContent = currentDriver.name;
         document.getElementById('drv-meta').textContent = `${currentDriver.vehicle || '-'} • ${currentDriver.color || '-'}`;
+        document.getElementById('drv-phone-display').textContent = `📞 ${currentDriver.phone || 'No disponible'}`;
+        
         const avatar = document.getElementById('drv-avatar');
         if(currentDriver.photo) {
-          avatar.style.backgroundImage = `url(${currentDriver.photo})`;
-          avatar.style.backgroundSize = 'cover'; avatar.textContent = '';
-        } else { avatar.style.backgroundImage = ''; avatar.textContent = '👤'; }
+          avatar.src = currentDriver.photo;
+        } else {
+          avatar.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">👤</text></svg>';
+        }
         
         updateDriverStatusUI();
         loadDriverRides();
+        
+        showToast(`Bienvenido, ${currentDriver.name}`, 'success');
       } catch(err) {
-        alert('❌ Error: ' + err.message);
+        showToast('Error de conexión: ' + err.message, 'error');
       }
     }
 
     async function toggleDriverStatus() {
       if(!currentDriver?.id) return;
       const newStatus = !currentDriver.active;
-      await db.collection('drivers').doc(currentDriver.id).update({ active: newStatus });
-      currentDriver.active = newStatus;
-      updateDriverStatusUI();
+      try {
+        await db.collection('drivers').doc(currentDriver.id).update({active: newStatus});
+        currentDriver.active = newStatus;
+        updateDriverStatusUI();
+        showToast(newStatus ? 'Estado: Disponible' : 'Estado: No disponible', 'info');
+      } catch(err) {
+        showToast('Error: ' + err.message, 'error');
+      }
     }
 
     function updateDriverStatusUI() {
       const btn = document.getElementById('btn-toggle-status');
-      btn.textContent = currentDriver.active ? '🔴 Desactivar' : '✅ Activar';
-      btn.className = `btn ${currentDriver.active ? 'btn-danger' : 'btn-success'}`;
+      if(currentDriver.active) {
+        btn.textContent = '🔴 Desactivar Disponibilidad';
+        btn.className = 'btn btn-danger';
+      } else {
+        btn.textContent = '✅ Activar Disponibilidad';
+        btn.className = 'btn btn-success';
+      }
     }
 
     function loadDriverRides() {
-      unsubRides = db.collection('rides').where('status', '==', 'PENDING').onSnapshot(snap => {
-        if(!drvLat || !drvLon) {
-          document.getElementById('drv-rides').innerHTML = '<p class="loading">📍 Activa tu GPS para ver solicitudes</p>';
-          return;
-        }
-        const nearby = snap.docs.map(d => ({id: d.id, ...d.data()}))
-          .filter(r => r.lat && r.lon)
-          .map(r => ({...r, dist: calcDistance(r.lat, r.lon, drvLat, drvLon)}))
-          .filter(r => r.dist <= MAX_KM)
-          .sort((a,b) => a.dist - b.dist);
+      unsubscribers.push(
+        db.collection('rides').where('status', '==', 'PENDING').onSnapshot(snapshot => {
+          const container = document.getElementById('drv-rides');
           
-        document.getElementById('drv-rides').innerHTML = nearby.length ? nearby.map(r => `
-          <div class="ride-card">
-            <div class="info"><strong>👤 ${r.passengerName}</strong><p>📍 A ${r.dist.toFixed(1)} km • 💰 S/. ${r.fare || '?'}</p></div>
-            <button class="btn btn-success" style="width:auto;padding:8px 12px;" onclick="acceptRide('${r.id}')">Aceptar</button>
-          </div>
-        `).join('') : '<p class="loading">📡 Sin solicitudes cerca</p>';
-      });
+          if(!drvLat || !drvLon) {
+            container.innerHTML = '<p class="text-muted text-center">📍 Activa tu GPS para ver solicitudes cercanas</p>';
+            return;
+          }
+          
+          const nearby = snapshot.docs.map(d => ({id: d.id, ...d.data()}))
+            .filter(r => r.lat && r.lon)
+            .map(r => ({...r, dist: calcDistance(r.lat, r.lon, drvLat, drvLon)}))
+            .filter(r => r.dist <= 3)
+            .sort((a,b) => a.dist - b.dist);
+          
+          if(nearby.length === 0) {
+            container.innerHTML = '<p class="text-muted text-center">📡 No hay solicitudes en un radio de 3km</p>';
+            return;
+          }
+          
+          container.innerHTML = nearby.map(r => `
+            <div class="card" style="margin-bottom:1rem;">
+              <div class="flex justify-between items-center mb-4">
+                <div>
+                  <h4 class="font-semibold">👤 ${r.passengerName}</h4>
+                  <p class="text-muted" style="font-size:0.875rem;">📍 A ${r.dist.toFixed(1)} km</p>
+                </div>
+                <div class="text-right">
+                  <p class="font-semibold" style="font-size:1.25rem; color:var(--primary);">S/ ${r.fare || '?'}</p>
+                </div>
+              </div>
+              <button class="btn btn-success" onclick="acceptRide('${r.id}')" style="width:100%;">
+                Aceptar Viaje
+              </button>
+            </div>
+          `).join('');
+        })
+      );
     }
 
     async function acceptRide(rideId) {
-      if(!confirm('¿Aceptar viaje?')) return;
-      await db.collection('rides').doc(rideId).update({ status: 'ACCEPTED', driverId: currentDriver.id });
-      alert('✅ Viaje aceptado');
+      try {
+        await db.collection('rides').doc(rideId).update({
+          status: 'ACCEPTED',
+          driverId: currentDriver.id,
+          acceptedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast('✅ Viaje aceptado exitosamente', 'success');
+      } catch(err) {
+        showToast('Error: ' + err.message, 'error');
+      }
     }
 
-    // 📦 DRIVER: REPORTAR OBJETO PERDIDO CON FOTO
     async function reportLostItem() {
       const desc = document.getElementById('lost-desc').value.trim();
-      if(!desc) return alert('Describe el objeto');
+      if(!desc) return showToast('Describe el objeto', 'error');
       
       const fileInput = document.getElementById('lost-photo');
-      const processReport = async (photoBase64 = null) => {
+      
+      const saveReport = async (photoBase64) => {
         try {
           await db.collection('lostItems').add({
             description: desc,
@@ -443,109 +1407,164 @@
             date: new Date().toLocaleString(),
             reportedAt: firebase.firestore.FieldValue.serverTimestamp()
           });
+          
           document.getElementById('lost-desc').value = '';
           fileInput.value = '';
-          alert('📢 Reporte enviado al administrador');
+          showToast('📢 Reporte enviado al administrador', 'success');
         } catch(err) {
-          alert('❌ Error: ' + err.message);
+          showToast('Error: ' + err.message, 'error');
         }
       };
-
+      
       if(fileInput.files[0]) {
         const reader = new FileReader();
-        reader.onload = e => processReport(e.target.result);
+        reader.onload = e => saveReport(e.target.result);
         reader.readAsDataURL(fileInput.files[0]);
       } else {
-        processReport();
+        saveReport(null);
       }
     }
 
-    function logoutDriver() {
-      cleanupListeners();
-      currentDriver = null; drvLat = null; drvLon = null;
-      document.getElementById('drv-dashboard').classList.add('hidden');
-      document.getElementById('drv-login').classList.remove('hidden');
-      document.getElementById('drv-id-input').value = '';
+    function getDriverLocation() {
+      if(!navigator.geolocation) return showToast('GPS no disponible', 'error');
+      
+      navigator.geolocation.getCurrentPosition(pos => {
+        drvLat = pos.coords.latitude;
+        drvLon = pos.coords.longitude;
+        document.getElementById('drv-loc-status').textContent = `📍 ${drvLat.toFixed(4)}, ${drvLon.toFixed(4)}`;
+        
+        if(currentDriver?.id) {
+          db.collection('drivers').doc(currentDriver.id).update({
+            lat: drvLat,
+            lon: drvLon,
+            lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+          }).catch(console.warn);
+        }
+        
+        showToast('Ubicación actualizada', 'success');
+      }, () => {
+        showToast('Error al obtener ubicación', 'error');
+      }, {enableHighAccuracy: true});
     }
 
-    // 🙋 PASSENGER: SOLICITAR VIAJE
+    // PASSENGER
+    function getPassengerLocation() {
+      if(!navigator.geolocation) return showToast('GPS no disponible', 'error');
+      
+      const btn = document.getElementById('btn-get-loc');
+      const status = document.getElementById('psg-loc-status');
+      
+      btn.disabled = true;
+      status.textContent = '📡 Obteniendo ubicación...';
+      
+      navigator.geolocation.getCurrentPosition(pos => {
+        psgLat = pos.coords.latitude;
+        psgLon = pos.coords.longitude;
+        status.textContent = `✅ Ubicación obtenida: ${psgLat.toFixed(4)}, ${psgLon.toFixed(4)}`;
+        document.getElementById('btn-request').disabled = false;
+        btn.disabled = false;
+      }, () => {
+        status.textContent = '❌ Error. Activa el GPS e intenta de nuevo';
+        btn.disabled = false;
+      }, {enableHighAccuracy: true, timeout: 15000});
+    }
+
     async function requestRide() {
       const name = document.getElementById('psg-name').value.trim();
-      if(!name) return alert('Ingresa tu nombre');
-      if(!psgLat) return alert('Activa tu ubicación GPS primero');
+      const phone = document.getElementById('psg-phone').value.trim();
       
-      // Calcular tarifa sugerida basada en zonas o distancia
-      let suggestedFare = 5;
+      if(!name || !phone) return showToast('Completa todos los campos', 'error');
+      if(!psgLat) return showToast('Obtén tu ubicación primero', 'error');
+      
       try {
-        const zonesSnap = await db.collection('zones').get();
-        if(!zonesSnap.empty) {
-          // Toma el precio base de la primera zona como referencia simple
-          suggestedFare = zonesSnap.docs[0].data().price || 5;
+        // Obtener tarifa base de zonas
+        let fare = 5;
+        const zones = await db.collection('zones').get();
+        if(!zones.empty) {
+          fare = zones.docs[0].data().price || 5;
         }
-      } catch(e) {}
-      
-      const rideRef = await db.collection('rides').add({
-        passengerName: name,
-        lat: psgLat, lon: psgLon,
-        status: 'PENDING', driverId: null,
-        fare: suggestedFare,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      activeRide = { id: rideRef.id };
-      
-      document.getElementById('psg-ride-status').classList.remove('hidden');
-      document.getElementById('psg-status-text').textContent = '🔍 Buscando conductores...';
-      document.getElementById('psg-negotiation').classList.remove('hidden');
-      document.getElementById('psg-fare').value = suggestedFare;
-      watchMyRide(rideRef.id);
-    }
-
-    function watchMyRide(rideId) {
-      unsubRides = db.collection('rides').doc(rideId).onSnapshot(doc => {
-        if(!doc.exists) return;
-        const ride = doc.data();
-        activeRide = { id: doc.id, ...ride };
         
-        if(ride.status === 'ACCEPTED' && ride.driverId) {
-          document.getElementById('psg-status-text').textContent = '✅ Conductor en camino';
-          document.getElementById('psg-status-text').className = 'status-box status-active';
-          document.getElementById('psg-negotiation').classList.add('hidden');
-          document.getElementById('psg-active-ride').classList.remove('hidden');
+        const rideRef = await db.collection('rides').add({
+          passengerName: name,
+          passengerPhone: phone,
+          lat: psgLat,
+          lon: psgLon,
+          status: 'PENDING',
+          driverId: null,
+          fare: fare,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        activeRide = {id: rideRef.id};
+        document.getElementById('psg-ride-status').classList.remove('hidden');
+        watchRide(rideRef.id);
+        
+        showToast('🔍 Buscando conductor disponible...', 'info');
+      } catch(err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    function watchRide(rideId) {
+      unsubscribers.push(
+        db.collection('rides').doc(rideId).onSnapshot(doc => {
+          if(!doc.exists) return;
           
-          db.collection('drivers').doc(ride.driverId).get().then(d => {
-            if(d.exists) {
-              const drv = d.data();
-              document.getElementById('psg-driver-info').textContent = `👤 ${drv.name} • 🏍️ ${drv.vehicle || '-'} (${drv.color || '-'})`;
-              document.getElementById('psg-driver-phone').textContent = `📞 ${drv.phone || 'No disponible'}`;
-            }
-          });
-        }
-      });
-    }
-
-    async function acceptFare() {
-      if(!activeRide?.id) return;
-      const fare = parseFloat(document.getElementById('psg-fare').value);
-      if(!fare || fare <= 0) return alert('Tarifa inválida');
-      await db.collection('rides').doc(activeRide.id).update({ fare });
-      alert('💬 Tarifa enviada');
-    }
-
-    async function cancelRide() {
-      if(!activeRide?.id) return;
-      await db.collection('rides').doc(activeRide.id).update({ status: 'CANCELLED' });
-      document.getElementById('psg-ride-status').classList.add('hidden');
-      activeRide = null;
+          const ride = doc.data();
+          activeRide = {id: doc.id, ...ride};
+          
+          if(ride.status === 'ACCEPTED' && ride.driverId) {
+            document.getElementById('psg-status-text').textContent = '✅ Conductor asignado - En camino';
+            document.getElementById('psg-status-text').className = 'status-box status-active';
+            document.getElementById('psg-active-ride').classList.remove('hidden');
+            
+            db.collection('drivers').doc(ride.driverId).get().then(d => {
+              if(d.exists) {
+                const drv = d.data();
+                document.getElementById('psg-driver-name').textContent = drv.name;
+                document.getElementById('psg-driver-vehicle').textContent = `${drv.vehicle || '-'} • ${drv.color || '-'}`;
+                document.getElementById('psg-driver-phone').textContent = `📞 ${drv.phone || 'No disponible'}`;
+                
+                const avatar = document.getElementById('psg-driver-avatar');
+                if(drv.photo) {
+                  avatar.src = drv.photo;
+                }
+              }
+            });
+          }
+        })
+      );
     }
 
     async function completeRide() {
-      if(!activeRide?.id) return;
-      await db.collection('rides').doc(activeRide.id).update({ status: 'COMPLETED' });
-      alert('💵 ¡Pago registrado! Gracias 🛺');
-      document.getElementById('psg-ride-status').classList.add('hidden');
-      activeRide = null;
+      try {
+        await db.collection('rides').doc(activeRide.id).update({
+          status: 'COMPLETED',
+          completedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast('💵 ¡Pago registrado! Gracias por usar MototaxiCloud', 'success');
+        setTimeout(() => location.reload(), 2000);
+      } catch(err) {
+        showToast('Error: ' + err.message, 'error');
+      }
     }
 
+    async function cancelRide() {
+      try {
+        await db.collection('rides').doc(activeRide.id).update({status: 'CANCELLED'});
+        showToast('Viaje cancelado', 'warning');
+        setTimeout(() => location.reload(), 1500);
+      } catch(err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    // Inicialización
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log('✅ MototaxiCloud Pro cargado');
+    });
+
+    // Service Worker para PWA
     if('serviceWorker' in navigator) {
       const swCode = `self.addEventListener('install', e => self.skipWaiting()); self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match('/'))));`;
       navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode], {type:'application/javascript'}))).catch(()=>{});
